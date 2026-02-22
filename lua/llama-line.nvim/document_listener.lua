@@ -1,0 +1,103 @@
+local binary = require("llamaline.nvim.binary.binary_handler")
+local config = require("llamaline.nvim.config")
+local log = require("llamaline.nvim.logger")
+local preview = require("llamaline.nvim.completion_preview")
+
+local M = {
+  augroup = nil,
+}
+
+M.setup = function()
+  M.augroup = vim.api.nvim_create_augroup("llamaline", { clear = true })
+
+  vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "TextChangedP" }, {
+    group = M.augroup,
+    callback = function(event)
+      local file_name = event["file"]
+      local buffer = event["buf"]
+      if not file_name or not buffer then
+        return
+      end
+      binary:on_update(buffer, file_name, "text_changed")
+    end,
+  })
+
+  if config.polite_mode then
+    -- polite mode
+    local keymap = config.keymaps.polite_suggestion
+    if keymap == nil then
+      log:warn("polite mode is enabled but no keymap is set")
+      return
+    end
+    vim.keymap.set("i", keymap, function()
+      local file_name = vim.api.nvim_buf_get_name(0)
+      local buffer = vim.api.nvim_get_current_buf()
+      if not file_name or not buffer then
+        return
+      end
+      binary:on_update(buffer, file_name, "manual")
+    end, { silent = true })
+  end
+
+  vim.api.nvim_create_autocmd({ "BufEnter" }, {
+    callback = function(_)
+      local ok, api = pcall(require, "llamaline.nvim.api")
+      if not ok then
+        return
+      end
+      if config.condition() or vim.g.LLAMALINE_DISABLED == 1 then
+        if api.is_running() then
+          api.stop()
+          return
+        end
+      else
+        if api.is_running() then
+          return
+        end
+        api.start()
+      end
+    end,
+  })
+
+  vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+    group = M.augroup,
+    callback = function(event)
+      local file_name = event["file"]
+      local buffer = event["buf"]
+      if not file_name or not buffer then
+        return
+      end
+      binary:on_update(buffer, file_name, "cursor")
+    end,
+  })
+
+  vim.api.nvim_create_autocmd({ "InsertLeave" }, {
+    group = M.augroup,
+    callback = function(event)
+      preview:dispose_inlay()
+    end,
+  })
+
+  if config.color and config.color.suggestion_color and config.color.cterm then
+    vim.api.nvim_create_autocmd({ "VimEnter", "ColorScheme" }, {
+      group = M.augroup,
+      pattern = "*",
+      callback = function(event)
+        vim.api.nvim_set_hl(0, "LlamaLineSuggestion", {
+          fg = config.color.suggestion_color,
+          ctermfg = config.color.cterm,
+        })
+        preview.suggestion_group = "LlamaLineSuggestion"
+      end,
+    })
+  end
+end
+
+M.teardown = function()
+  if M.augroup ~= nil then
+    vim.api.nvim_del_augroup_by_id(M.augroup)
+    M.augroup = nil
+  end
+end
+
+return M
