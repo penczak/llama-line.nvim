@@ -1,5 +1,5 @@
-local CompletionPreview = require("llamaline.nvim.completion_preview")
-local u = require("llamaline.nvim.util")
+local CompletionPreview = require("llamaline-nvim.completion_preview")
+local u = require("llamaline-nvim.util")
 
 local loop = u.uv
 

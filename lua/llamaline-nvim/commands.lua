@@ -1,5 +1,5 @@
-local api = require("llamaline.nvim.api")
-local log = require("llamaline.nvim.logger")
+local api = require("llamaline-nvim.api")
+local log = require("llamaline-nvim.logger")
 
 local M = {}
 

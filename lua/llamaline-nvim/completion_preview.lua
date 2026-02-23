@@ -1,4 +1,4 @@
-local u = require("llamaline.nvim.util")
+local u = require("llamaline-nvim.util")
 
 local CompletionPreview = {
   inlay_instance = nil,

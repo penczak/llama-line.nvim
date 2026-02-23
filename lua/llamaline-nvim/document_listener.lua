@@ -1,7 +1,7 @@
-local binary = require("llamaline.nvim.binary.binary_handler")
-local config = require("llamaline.nvim.config")
-local log = require("llamaline.nvim.logger")
-local preview = require("llamaline.nvim.completion_preview")
+local binary = require("llamaline-nvim.binary.binary_handler")
+local config = require("llamaline-nvim.config")
+local log = require("llamaline-nvim.logger")
+local preview = require("llamaline-nvim.completion_preview")
 
 local M = {
   augroup = nil,
@@ -18,7 +18,7 @@ M.setup = function()
       if not file_name or not buffer then
         return
       end
-      binary:on_update(buffer, file_name, "text_changed")
+      binary:on_update(buffer, "text_changed")
     end,
   })
 
@@ -35,13 +35,13 @@ M.setup = function()
       if not file_name or not buffer then
         return
       end
-      binary:on_update(buffer, file_name, "manual")
+      binary:on_update(buffer, "manual")
     end, { silent = true })
   end
 
   vim.api.nvim_create_autocmd({ "BufEnter" }, {
     callback = function(_)
-      local ok, api = pcall(require, "llamaline.nvim.api")
+      local ok, api = pcall(require, "llamaline-nvim.api")
       if not ok then
         return
       end
@@ -67,7 +67,7 @@ M.setup = function()
       if not file_name or not buffer then
         return
       end
-      binary:on_update(buffer, file_name, "cursor")
+      binary:on_update(buffer, "cursor")
     end,
   })
 

@@ -1,8 +1,8 @@
-local completion_preview = require("llamaline.nvim.completion_preview")
-local log = require("llamaline.nvim.logger")
-local config = require("llamaline.nvim.config")
-local commands = require("llamaline.nvim.commands")
-local api = require("llamaline.nvim.api")
+local completion_preview = require("llamaline-nvim.completion_preview")
+local log = require("llamaline-nvim.logger")
+local config = require("llamaline-nvim.config")
+local commands = require("llamaline-nvim.commands")
+local api = require("llamaline-nvim.api")
 
 local M = {}
 
@@ -42,7 +42,7 @@ M.setup = function(args)
 
   local cmp_ok, cmp = pcall(require, "cmp")
   if cmp_ok then
-    local cmp_source = require("llamaline.nvim.cmp")
+    local cmp_source = require("llamaline-nvim.cmp")
     cmp.register_source("llamaline", cmp_source.new())
   else
     if config.disable_inline_completion then

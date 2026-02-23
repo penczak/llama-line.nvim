@@ -1,5 +1,5 @@
 ---@diagnostic disable: deprecated
-local log = require("llamaline.nvim.logger")
+local log = require("llamaline-nvim.logger")
 local M = {}
 
 local function compute_lps(pattern, lps)
@@ -101,13 +101,48 @@ function M.get_cursor_prefix(bufnr, cursor)
 end
 
 function M.get_cursor_suffix(bufnr, cursor)
-  if not vim.api.nvim_buf_is_valid(bufnr) then
+  local row = cursor[1] - 1  -- convert to 0-based
+  local col = cursor[2]
+
+  local line_count = vim.api.nvim_buf_line_count(bufnr)
+  local last_row = line_count - 1
+
+  -- If cursor is past last line, nothing to return
+  if row > last_row then
     return ""
   end
 
-  local suffix = vim.api.nvim_buf_get_text(bufnr, cursor[1], cursor[2], -1, -1, {})
-  local text = table.concat(suffix, "\n")
-  return text
+  -- Get current line length
+  local current_line = vim.api.nvim_buf_get_lines(bufnr, row, row + 1, false)[1] or ""
+  local line_len = #current_line
+
+  -- Clamp column to line length
+  if col > line_len then
+    col = line_len
+  end
+
+  -- If at very end of buffer
+  if row == last_row and col == line_len then
+    return ""
+  end
+
+  -- Safe call
+  local ok, text = pcall(vim.api.nvim_buf_get_text,
+    bufnr,
+    row,
+    col,
+    last_row,
+    #(
+      vim.api.nvim_buf_get_lines(bufnr, last_row, last_row + 1, false)[1] or ""
+    ),
+    {}
+  )
+
+  if not ok then
+    return ""
+  end
+
+  return table.concat(text, "\n")
 end
 
 function M.get_text_before_after_cursor(cursor)

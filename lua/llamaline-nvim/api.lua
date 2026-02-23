@@ -1,7 +1,7 @@
-local binary = require("llamaline.nvim.binary.binary_handler")
-local listener = require("llamaline.nvim.document_listener")
-local log = require("llamaline.nvim.logger")
-local u = require("llamaline.nvim.util")
+local binary = require("llamaline-nvim.binary.binary_handler")
+local listener = require("llamaline-nvim.document_listener")
+local log = require("llamaline-nvim.logger")
+local u = require("llamaline-nvim.util")
 
 local loop = u.uv
 
@@ -12,12 +12,7 @@ M.is_running = function()
 end
 
 M.start = function()
-  if M.is_running() then
-    log:warn("LlamaLine is already running.")
-    return
-  else
-    log:trace("Starting LlamaLine...")
-  end
+  log:trace("Starting LlamaLine...")
   vim.g.LLAMALINE_DISABLED = 0
   binary:start_binary()
   listener.setup()

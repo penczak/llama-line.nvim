@@ -1,4 +1,4 @@
-local u = require("llamaline.nvim.util")
+local u = require("llamaline-nvim.util")
 local M = {}
 
 local function find_first_non_empty_newline(s)
