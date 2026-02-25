@@ -1,6 +1,6 @@
 # LlamaLine Neovim Plugin
 
-This plugin, llamaline.nvim, lets you use [LlamaLine](https://llamaline.com/) in Neovim. If you encounter any issues while using llamaline.nvim, consider opening an issue or reaching out to us on [Discord](https://discord.com/invite/QQpqBmQH3w).
+This repo started as a fork of [Supermaven's Neovim Plugin](https://github.com/supermaven-inc/supermaven-nvim) which they have stopped supporting. 
 
 ## Installation
 
@@ -11,23 +11,12 @@ Using a plugin manager, run the .setup({}) function in your Neovim configuration
 ```lua
 require("lazy").setup({
     {
-      "llamaline-inc/llamaline.nvim",
+      "penczak/llama-line.nvim",
       config = function()
         require("llamaline.nvim").setup({})
       end,
     },
 }, {})
-```
-
-### Using [packer.nvim](https://github.com/wbthomason/packer.nvim)
-
-```lua
-use {
-  "llamaline-inc/llamaline.nvim",
-  config = function()
-    require("llamaline.nvim").setup({})
-  end,
-}
 ```
 
 ### Optional configuration
@@ -55,6 +44,8 @@ require("llamaline.nvim").setup({
   disable_inline_completion = false, -- disables inline completion for use with cmp
   disable_keymaps = false, -- disables built in keymaps for more manual control
   polite_mode = false, -- disables auto-completions until requested by user. requires keymaps.polite_suggestion to be set
+  ollama_model = "codellama:7b-code",
+  fim_style = "<PRE>, -- this is the fill-in-middle (FIM) style which can vary depending on which FIM model you use. options currently are "<PRE>" (codellama) or "<|fim_prefix|>" (codegemma)
   condition = function()
     return false
   end -- condition to check for stopping llamaline, `true` means to stop llamaline when the condition is true.
@@ -154,10 +145,6 @@ end
 
 ## Usage
 
-Upon starting llamaline.nvim, you will be prompted to either use the Free Tier with the command `:LlamaLineUseFree` or to activate a LlamaLine Pro subscription by following a link, which will connect your LlamaLine account.
-
-If LlamaLine is set up, you can use `:LlamaLineLogout` to switch versions.
-
 You can also use `:LlamaLineShowLog` to view the logged messages in `path/to/stdpath-cache/llamaline.nvim.log` if you encounter any issues. Or `:LlamaLineClearLog` to clear the log file.
 
 ### Commands
@@ -165,14 +152,6 @@ You can also use `:LlamaLineShowLog` to view the logged messages in `path/to/std
 llamaline.nvim provides the following commands:
 
 ```
-:LlamaLineStart    start llamaline.nvim
-:LlamaLineStop     stop llamaline.nvim
-:LlamaLineRestart  restart llamaline.nvim
-:LlamaLineToggle   toggle llamaline.nvim
-:LlamaLineStatus   show status of llamaline.nvim
-:LlamaLineUseFree  switch to the free version
-:LlamaLineUsePro   switch to the pro version
-:LlamaLineLogout   log out of llamaline
 :LlamaLineShowLog  show logs for llamaline.nvim
 :LlamaLineClearLog clear logs for llamaline.nvim
 ```
@@ -184,14 +163,6 @@ The `llamaline.nvim.api` module provides the following functions for interacting
 ```lua
 local api = require("llamaline.nvim.api")
 
-api.start() -- starts llamaline.nvim
-api.stop() -- stops llamaline.nvim
-api.restart() -- restarts llamaline.nvim if it is running, otherwise starts it
-api.toggle() -- toggles llamaline.nvim
-api.is_running() -- returns true if llamaline.nvim is running
-api.use_free_version() -- switch to the free version
-api.use_pro() -- switch to the pro version
-api.logout() -- log out of llamaline
 api.show_log() -- show logs for llamaline.nvim
 api.clear_log() -- clear logs for llamaline.nvim
 ```
