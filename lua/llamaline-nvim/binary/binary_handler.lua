@@ -24,13 +24,10 @@ end
 ---@param buffer integer
 ---@param event_type "text_changed" | "cursor" | "manual"
 function BinaryLifecycle:on_update(buffer, event_type)
-  print("on_update")
-
   if event_type == "cursor" then
     preview:dispose_inlay()
     return
   end
-  print("provide comp")
 
   local cursor = api.nvim_win_get_cursor(0)
   self:provide_inline_completion_items(buffer, cursor)
@@ -64,19 +61,25 @@ local function handle_completion(buffer, cursor, completion)
 end
 
 function BinaryLifecycle:provide_inline_completion_items(buffer, cursor)
-  local prefix = u.get_cursor_prefix(buffer, cursor)
-  local suffix = u.get_cursor_suffix(buffer, cursor)
+  local prefix = u.get_cursor_prefix(buffer, cursor, 30)
+  local suffix = u.get_cursor_suffix(buffer, cursor, 30)
 
-
-  local prompt = "<PRE>" .. prefix .. "<SUF>" .. suffix .. "<MID>"
+  local prompt = ""
+  if config.fim_style == "<PRE>" then
+    prompt = "<PRE> " .. prefix .. " <SUF> " .. suffix .. " <MID>"
+  elseif config.fim_style == "<|fim_prefix|>" then
+    prompt = "<|fim_prefix|>" .. prefix .. "<|fim_suffix|>" .. suffix .. "<|fim_middle|>"
+  else
+    print("config.fim_style had an unsupported value")
+    return
+  end
   print("prmptd")
 
   local body = vim.json.encode({
-    model = "codellama:7b-code",
+    model = config.ollama_model,
     prompt = prompt,
     stream = false,
   })
-
 
   vim.system({
     "curl",

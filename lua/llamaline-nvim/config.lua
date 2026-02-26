@@ -9,6 +9,8 @@ local default_config = {
   disable_inline_completion = false,
   disable_keymaps = false,
   polite_mode = false,
+  ollama_model = "codellama:7b-code",
+  fim_style = "<PRE>", -- other option "<|fim_prefix|>"
   condition = function()
     return false
   end,

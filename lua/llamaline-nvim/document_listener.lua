@@ -10,19 +10,19 @@ local M = {
 M.setup = function()
   M.augroup = vim.api.nvim_create_augroup("llamaline", { clear = true })
 
-  vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "TextChangedP" }, {
-    group = M.augroup,
-    callback = function(event)
-      local file_name = event["file"]
-      local buffer = event["buf"]
-      if not file_name or not buffer then
-        return
-      end
-      binary:on_update(buffer, "text_changed")
-    end,
-  })
-
-  if config.polite_mode then
+  if not config.polite_mode then
+    vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "TextChangedP" }, {
+      group = M.augroup,
+      callback = function(event)
+        local file_name = event["file"]
+        local buffer = event["buf"]
+        if not file_name or not buffer then
+          return
+        end
+        binary:on_update(buffer, "text_changed")
+      end,
+    })
+  else
     -- polite mode
     local keymap = config.keymaps.polite_suggestion
     if keymap == nil then

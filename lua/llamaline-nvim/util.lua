@@ -90,18 +90,44 @@ function M.get_home_directory()
   return homeDir
 end
 
-function M.get_cursor_prefix(bufnr, cursor)
+function M.get_cursor_prefix(bufnr, cursor, max_lines)
+  print(max_lines)
+  max_lines = max_lines or 999
   if not vim.api.nvim_buf_is_valid(bufnr) then
     return ""
   end
 
-  local prefix = vim.api.nvim_buf_get_text(bufnr, 0, 0, cursor[1] - 1, cursor[2], {})
-  local text = table.concat(prefix, "\n")
-  return text
+  if not max_lines or max_lines <= 0 then
+    return ""
+  end
+
+  local row = cursor[1] - 1 -- 0-based
+  local col = cursor[2]
+
+  -- Determine starting row so we only include max_lines
+  local start_row = math.max(0, row - (max_lines - 1))
+
+  -- Safe call
+  local ok, text = pcall(
+    vim.api.nvim_buf_get_text,
+    bufnr,
+    start_row,
+    0,
+    row,
+    col,
+    {}
+  )
+
+  if not ok then
+    return ""
+  end
+
+  return table.concat(text, "\n")
 end
 
-function M.get_cursor_suffix(bufnr, cursor)
-  local row = cursor[1] - 1  -- convert to 0-based
+function M.get_cursor_suffix(bufnr, cursor, max_lines)
+  max_lines = max_lines or 999
+  local row = cursor[1] - 1 -- convert to 0-based
   local col = cursor[2]
 
   local line_count = vim.api.nvim_buf_line_count(bufnr)
@@ -112,7 +138,7 @@ function M.get_cursor_suffix(bufnr, cursor)
     return ""
   end
 
-  -- Get current line length
+  -- Get current line
   local current_line = vim.api.nvim_buf_get_lines(bufnr, row, row + 1, false)[1] or ""
   local line_len = #current_line
 
@@ -126,15 +152,21 @@ function M.get_cursor_suffix(bufnr, cursor)
     return ""
   end
 
+  -- Determine how many rows we’re allowed to include
+  local max_end_row = math.min(last_row, row + math.max(max_lines - 1, 0))
+
+  -- Determine end column
+  local end_line = vim.api.nvim_buf_get_lines(bufnr, max_end_row, max_end_row + 1, false)[1] or ""
+  local end_col = #end_line
+
   -- Safe call
-  local ok, text = pcall(vim.api.nvim_buf_get_text,
+  local ok, text = pcall(
+    vim.api.nvim_buf_get_text,
     bufnr,
     row,
     col,
-    last_row,
-    #(
-      vim.api.nvim_buf_get_lines(bufnr, last_row, last_row + 1, false)[1] or ""
-    ),
+    max_end_row,
+    end_col,
     {}
   )
 
@@ -143,6 +175,16 @@ function M.get_cursor_suffix(bufnr, cursor)
   end
 
   return table.concat(text, "\n")
+end
+
+function M.get_text_before_after_cursor(cursor)
+  local line = vim.api.nvim_get_current_line()
+  local text_before_cursor = string.sub(line, 1, cursor[2])
+  local text_after_cursor = string.sub(line, cursor[2] + 1)
+  return {
+    text_before_cursor = text_before_cursor,
+    text_after_cursor = text_after_cursor,
+  }
 end
 
 function M.get_text_before_after_cursor(cursor)
