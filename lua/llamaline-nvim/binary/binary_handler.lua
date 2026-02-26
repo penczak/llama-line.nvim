@@ -9,18 +9,6 @@ local BinaryLifecycle = {}
 
 BinaryLifecycle.HARD_SIZE_LIMIT = 10e6
 
-function BinaryLifecycle:is_running()
-  return true
-end
-
-function BinaryLifecycle:start_binary()
-  -- no op
-end
-
-function BinaryLifecycle:stop_binary()
-  -- no op
-end
-
 ---@param buffer integer
 ---@param event_type "text_changed" | "cursor" | "manual"
 function BinaryLifecycle:on_update(buffer, event_type)
@@ -45,7 +33,7 @@ end
 
 local function handle_completion(buffer, cursor, completion)
   if not vim.api.nvim_buf_is_valid(buffer) then
-    print("not valid buffer")
+    log:warn("not valid buffer")
     return
   end
 
@@ -70,10 +58,10 @@ function BinaryLifecycle:provide_inline_completion_items(buffer, cursor)
   elseif config.fim_style == "<|fim_prefix|>" then
     prompt = "<|fim_prefix|>" .. prefix .. "<|fim_suffix|>" .. suffix .. "<|fim_middle|>"
   else
-    print("config.fim_style had an unsupported value")
+    log:warn("config.fim_style had an unsupported value")
     return
   end
-  print("prmptd")
+  log:info("Prompt sent to ollama")
 
   local body = vim.json.encode({
     model = config.ollama_model,
@@ -88,22 +76,20 @@ function BinaryLifecycle:provide_inline_completion_items(buffer, cursor)
     "http://localhost:11434/api/generate",
     "-d", body,
   }, { text = true }, function(obj)
-    print("ollama returned")
+    log:warn("ollama returned")
     if not obj.stdout then
-      print("not stdout")
+      log:warn("not stdout")
       return
     end
-    -- print(obj.stdout)
 
     local ok, decoded = pcall(vim.json.decode, obj.stdout)
     if not ok or not decoded.response then
-      print("not ok")
+      log:warn("not ok")
       return
     end
 
     local completion = decoded.response:gsub("<EOT>", "")
     completion = completion:gsub("^%s+", "")
-    -- print(completion)
 
     vim.schedule(function()
       handle_completion(buffer, cursor, completion)

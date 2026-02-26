@@ -2,7 +2,6 @@ local completion_preview = require("llamaline-nvim.completion_preview")
 local log = require("llamaline-nvim.logger")
 local config = require("llamaline-nvim.config")
 local commands = require("llamaline-nvim.commands")
-local api = require("llamaline-nvim.api")
 
 local M = {}
 
@@ -51,8 +50,6 @@ M.setup = function(args)
       )
     end
   end
-
-  api.start()
 end
 
 return M

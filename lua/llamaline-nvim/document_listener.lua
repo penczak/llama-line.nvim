@@ -39,26 +39,6 @@ M.setup = function()
     end, { silent = true })
   end
 
-  vim.api.nvim_create_autocmd({ "BufEnter" }, {
-    callback = function(_)
-      local ok, api = pcall(require, "llamaline-nvim.api")
-      if not ok then
-        return
-      end
-      if config.condition() or vim.g.LLAMALINE_DISABLED == 1 then
-        if api.is_running() then
-          api.stop()
-          return
-        end
-      else
-        if api.is_running() then
-          return
-        end
-        api.start()
-      end
-    end,
-  })
-
   vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
     group = M.augroup,
     callback = function(event)
