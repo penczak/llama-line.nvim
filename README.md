@@ -13,7 +13,7 @@ require("lazy").setup({
     {
       "penczak/llama-line.nvim",
       config = function()
-        require("llamaline.nvim").setup({})
+        require("llamaline-nvim").setup({})
       end,
     },
 }, {})
@@ -29,6 +29,9 @@ The `ignore_filetypes` table is used to ignore filetypes when using llamaline.nv
 
 ```lua
 require("llamaline.nvim").setup({
+  polite_mode = false, -- disables auto-completions until requested by user. requires keymaps.polite_suggestion to be set
+  ollama_model = "codellama:7b-code",
+  fim_style = "<PRE>", -- this is the fill-in-middle (FIM) style which can vary depending on which FIM model you use. options currently are "<PRE>" (codellama) or "<|fim_prefix|>" (codegemma)
   keymaps = {
     accept_suggestion = "<Tab>",
     clear_suggestion = "<C-]>",
@@ -43,9 +46,6 @@ require("llamaline.nvim").setup({
   log_level = "info", -- set to "off" to disable logging completely
   disable_inline_completion = false, -- disables inline completion for use with cmp
   disable_keymaps = false, -- disables built in keymaps for more manual control
-  polite_mode = false, -- disables auto-completions until requested by user. requires keymaps.polite_suggestion to be set
-  ollama_model = "codellama:7b-code",
-  fim_style = "<PRE>, -- this is the fill-in-middle (FIM) style which can vary depending on which FIM model you use. options currently are "<PRE>" (codellama) or "<|fim_prefix|>" (codegemma)
   condition = function()
     return false
   end -- condition to check for stopping llamaline, `true` means to stop llamaline when the condition is true.
