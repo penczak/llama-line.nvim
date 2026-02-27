@@ -1,5 +1,11 @@
 # LlamaLine Neovim Plugin
 
+### In-line completions in Neovim using Ollama
+
+AI auto-complete without sending all of your code to third-party servers...
+
+
+
 This repo started as a fork of [Supermaven's Neovim Plugin](https://github.com/supermaven-inc/supermaven-nvim) which they have stopped supporting. 
 
 ## Installation
