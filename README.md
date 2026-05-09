@@ -25,7 +25,7 @@ require("lazy").setup({
 }, {})
 ```
 
-### Optional configuration
+### Configuration
 
 By default, llamaline.nvim will use the `<Tab>` and `<C-]>` keymaps to accept and clear suggestions. You can change these keymaps by passing a `keymaps` table to the .setup({}) function. Also in this table is `accept_word`, which allows partially accepting a completion, up to the end of the next word. By default this keymap is set to `<C-j>`.
 
