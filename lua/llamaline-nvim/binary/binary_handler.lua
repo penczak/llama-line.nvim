@@ -26,9 +26,9 @@ function BinaryLifecycle:same_context(context)
     return false
   end
   return context.cursor[1] == self.last_context.cursor[1]
-      and context.cursor[2] == self.last_context.cursor[2]
-      and context.file_name == self.last_context.file_name
-      and context.document_text == self.last_context.document_text
+    and context.cursor[2] == self.last_context.cursor[2]
+    and context.file_name == self.last_context.file_name
+    and context.document_text == self.last_context.document_text
 end
 
 local function handle_completion(buffer, cursor, completion)
@@ -39,13 +39,7 @@ local function handle_completion(buffer, cursor, completion)
 
   local text_split = u.get_text_before_after_cursor(cursor)
 
-  preview:render_with_inlay(
-    buffer,
-    0,
-    completion,
-    text_split.text_after_cursor,
-    text_split.text_before_cursor
-  )
+  preview:render_with_inlay(buffer, 0, completion, text_split.text_after_cursor, text_split.text_before_cursor)
 end
 
 function BinaryLifecycle:provide_inline_completion_items(buffer, cursor)
@@ -72,11 +66,13 @@ function BinaryLifecycle:provide_inline_completion_items(buffer, cursor)
   vim.system({
     "curl",
     "-s",
-    "-X", "POST",
+    "-X",
+    "POST",
     "http://localhost:11434/api/generate",
-    "-d", body,
+    "-d",
+    body,
   }, { text = true }, function(obj)
-    log:warn("ollama returned")
+    log:info("ollama returned")
     if not obj.stdout then
       log:warn("not stdout")
       return

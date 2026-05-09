@@ -153,6 +153,8 @@ end
 
 You can also use `:LlamaLineShowLog` to view the logged messages in `path/to/stdpath-cache/llamaline.nvim.log` if you encounter any issues. Or `:LlamaLineClearLog` to clear the log file.
 
+Currently, llamaline will take the 30 lines above the cursor and the 30 lines below the cursor for fill-in-middle (FIM) LLMs, often used for code completions.
+
 ### Commands
 
 llamaline.nvim provides the following commands:
